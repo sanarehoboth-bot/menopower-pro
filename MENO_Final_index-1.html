@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MenoPower Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root{
+  --cream:#FAFAFA; --white:#fff;
+  --blush:#E8C4B8; --rose:#C17B6A; --deep:#6B3A3A;
+  --sage:#7A9E7E;  --sage-light:#B8D4BA;
+  --warm:#F5E6D8;  --gold:#C9A96E;
+  --text:#2C1810;  --muted:#8B6355;
+  --border:#E8D8D0;
+  --r:14px; --ease:.22s ease;
+}
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+input,select,textarea,button{font-family:'Inter',sans-serif;}
+
+/* ══════════════════════════════════════
+   SCREEN 1 — GATE
+══════════════════════════════════════ */
+#screen1{
+  min-height:100vh;
+  background:var(--cream);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px 40px;
+}
+.gate-logo{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;font-weight:700;
+  color:var(--deep);letter-spacing:.5px;
+  margin-bottom:4px;text-align:center;
+}
+.gate-tagline{
+  font-size:.78rem;color:var(--muted);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:28px;text-align:center;
+}
+.gate-card{
+  background:var(--white);
+  border-radius:20px;
+  padding:28px 24px;
+  width:100%;max-width:380px;
+  box-shadow:0 8px 40px rgba(107,58,58,.1);
+  border:1px solid var(--border);
+}
+
+/* Toggle */
+.pass-toggle{
+  display:grid;grid-template-columns:1fr 1fr;
+  background:var(--warm);border-radius:10px;padding:4px;gap:4px;
+  margin-bottom:24px;
+}
+.pass-btn{
+  padding:.55rem .5rem;border:none;border-radius:8px;
+  font-size:.8rem;font-weight:500;cursor:pointer;
+  background:transparent;color:var(--muted);transition:all var(--ease);
+}
+.pass-btn.active{background:var(--deep);color:var(--white);box-shadow:0 2px 8px rgba(107,58,58,.25);}
+
+/* Global panel */
+.global-panel{text-align:center;}
+.price-big{
+  font-family:'Playfair Display',serif;
+  font-size:3rem;font-weight:700;color:var(--deep);line-height:1;
+}
+.price-sub{font-size:.78rem;color:var(--muted);margin:6px 0 20px;letter-spacing:.5px;}
+.gumroad-btn{
+  display:block;width:100%;
+  background:linear-gradient(135deg,var(--deep),var(--rose));
+  color:var(--white);border:none;border-radius:12px;
+  padding:.95rem;font-size:1rem;font-weight:600;
+  text-decoration:none;text-align:center;cursor:pointer;
+  letter-spacing:.5px;transition:opacity var(--ease),transform var(--ease);
+}
+.gumroad-btn:hover{opacity:.9;transform:translateY(-1px);}
+
+/* Local panel */
+.local-panel{text-align:center;display:none;}
+.local-price{
+  font-family:'Playfair Display',serif;
+  font-size:2.8rem;font-weight:700;color:var(--deep);line-height:1;
+}
+.local-sub{font-size:.78rem;color:var(--muted);margin:6px 0 16px;}
+
+/* Divider */
+.gate-divider{
+  display:flex;align-items:center;gap:10px;
+  margin:20px 0 16px;font-size:.72rem;color:var(--muted);
+}
+.gate-divider::before,.gate-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* PIN dots */
+.pin-hint{font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:8px;letter-spacing:1px;text-transform:uppercase;}
+.pin-dots{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
+.pin-dot{
+  width:12px;height:12px;border-radius:50%;
+  border:2px solid var(--border);background:transparent;
+  transition:all .2s;
+}
+.pin-dot.filled{background:var(--deep);border-color:var(--deep);}
+.pin-keypad{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;max-width:220px;margin:0 auto;
+}
+.pin-key{
+  aspect-ratio:1;border-radius:50%;border:1.5px solid var(--border);
+  background:var(--white);font-size:1.1rem;font-weight:500;
+  color:var(--text);cursor:pointer;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+}
+.pin-key:hover{background:var(--warm);border-color:var(--rose);}
+.pin-key:active{transform:scale(.93);}
+.pin-key.del{font-size:.85rem;color:var(--muted);}
+.pin-key.blank{background:transparent;border-color:transparent;cursor:default;}
+.pin-error{font-size:.75rem;color:var(--rose);text-align:center;min-height:18px;margin-top:8px;}
+
+/* ══════════════════════════════════════
+   SCREEN 2 — LICENSE ENTRY
+══════════════════════════════════════ */
+#screen2{
+  min-height:100vh;
+  background:linear-gradient(160deg,#2C1810 0%,#6B3A3A 60%,#C17B6A 100%);
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px;
+}
+.s2-logo{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;font-weight:400;color:var(--white);
+  letter-spacing:2px;margin-bottom:4px;text-align:center;
+}
+.s2-sub{font-size:.72rem;color:rgba(255,255,255,.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;text-align:center;}
+.s2-card{
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:28px 24px;
+  width:100%;max-width:400px;
+}
+.s2-rule{
+  background:rgba(255,255,255,.08);
+  border-left:3px solid var(--gold);
+  border-radius:10px;padding:14px 16px;
+  font-size:.8rem;color:rgba(255,255,255,.85);
+  line-height:1.7;margin-bottom:22px;
+}
+.s2-rule strong{color:var(--gold-light,#FFE082);display:block;margin-bottom:3px;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;}
+.s2-field{margin-bottom:14px;}
+.s2-field label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.6);margin-bottom:5px;font-weight:600;}
+.s2-field input{
+  width:100%;border:1.5px solid rgba(255,255,255,.2);
+  border-radius:10px;padding:.6rem .8rem;
+  font-size:.95rem;color:var(--white);
+  background:rgba(255,255,255,.1);outline:none;
+  transition:border-color .2s;
+}
+.s2-field input:focus{border-color:var(--gold);}
+.s2-field input::placeholder{color:rgba(255,255,255,.35);}
+.s2-msg{font-size:.76rem;min-height:18px;margin-bottom:12px;text-align:center;}
+.s2-submit{
+  width:100%;
+  background:linear-gradient(135deg,var(--gold),#8B4513);
+  color:var(--white);border:none;border-radius:12px;
+  padding:1rem;font-family:'Playfair Display',serif;
+  font-size:1.05rem;letter-spacing:1px;cursor:pointer;
+  transition:opacity .2s,transform .2s;
+}
+.s2-submit:hover{opacity:.9;transform:translateY(-1px);}
+.s2-fine{font-size:.62rem;color:rgba(255,255,255,.35);margin-top:12px;text-align:center;line-height:1.6;}
+
+/* ══════════════════════════════════════
+   SCREEN 3 — THE APP
+══════════════════════════════════════ */
+#screen3{display:none;}
+
+/* Header */
+.hdr{
+  background:linear-gradient(135deg,var(--deep) 0%,#8B4513 60%,var(--rose) 100%);
+  color:var(--white);padding:1.2rem 1rem 1rem;
+  text-align:center;position:relative;
+}
+.hdr h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:600;letter-spacing:1px;}
+.hdr p{font-size:.72rem;opacity:.8;margin-top:2px;letter-spacing:1px;}
+.lock-btn{
+  position:absolute;top:50%;right:14px;transform:translateY(-50%);
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:var(--white);border-radius:8px;padding:.35rem .7rem;
+  font-size:.72rem;cursor:pointer;transition:all .2s;
+}
+.lock-btn:hover{background:rgba(255,255,255,.25);}
+.share-btn{
+  position:absolute;top:50%;left:14px;transform:translateY(-50%);
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:var(--white);border-radius:8px;padding:.35rem .7rem;
+  font-size:.72rem;cursor:pointer;transition:all .2s;
+}
+.share-btn:hover{background:rgba(255,255,255,.25);}
+
+/* Target vs Achieved Dashboard */
+.dashboard{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:16px 16px 14px;
+}
+.dash-title{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;color:var(--deep);
+  margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}
+.dash-card{
+  background:var(--cream);border-radius:12px;padding:10px 12px;
+  border:1px solid var(--border);
+}
+.dash-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.dash-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:600;}
+.dash-icon{font-size:.9rem;}
+.dash-nums{display:flex;align-items:baseline;gap:4px;margin-bottom:5px;}
+.dash-achieved{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--deep);line-height:1;}
+.dash-target{font-size:.72rem;color:var(--muted);}
+.dash-bar-wrap{background:var(--border);border-radius:20px;height:5px;overflow:hidden;}
+.dash-bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .6s;}
+.dash-pct{font-size:.65rem;color:var(--muted);margin-top:3px;text-align:right;}
+
+/* Nav */
+.nav{
+  display:flex;overflow-x:auto;scrollbar-width:none;
+  background:var(--white);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{
+  flex-shrink:0;padding:.7rem 1rem;font-size:.72rem;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+  background:none;border:none;border-bottom:3px solid transparent;
+  cursor:pointer;white-space:nowrap;transition:all .2s;
+}
+.nav-btn.on{color:var(--deep);border-bottom-color:var(--rose);}
+
+/* Panels */
+.panel{display:none;}
+.panel.on{display:block;}
+.wrap{max-width:700px;margin:0 auto;padding:16px;}
+
+/* Section title */
+.sec-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;color:var(--deep);
+  margin-bottom:14px;padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+
+/* Card */
+.card{
+  background:var(--white);border-radius:var(--r);
+  padding:16px;margin-bottom:14px;
+  box-shadow:0 2px 12px rgba(107,58,58,.06);
+  border:1px solid var(--border);
+}
+
+/* Profile grid */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+.pf label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+.pf input,.pf select{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:.5rem .65rem;font-size:.9rem;color:var(--text);
+  background:var(--cream);outline:none;transition:border-color .2s;
+}
+.pf input:focus,.pf select:focus{border-color:var(--rose);background:var(--white);}
+
+/* BMI box */
+.bmi-box{
+  background:linear-gradient(135deg,var(--deep),var(--rose));
+  color:var(--white);border-radius:12px;padding:14px;text-align:center;
+}
+.bmi-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--gold);line-height:1;}
+.bmi-lbl{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;opacity:.8;margin-top:2px;}
+.bmi-cat{font-size:.8rem;font-weight:500;margin-top:4px;}
+
+/* Progress */
+.prog-wrap{background:var(--warm);border-radius:20px;height:10px;overflow:hidden;margin:6px 0 2px;}
+.prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .6s;}
+.prog-labels{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);}
+
+/* Meals */
+.meals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
+.meal-card{background:var(--white);border-radius:var(--r);padding:14px;border:1px solid var(--border);box-shadow:0 2px 10px rgba(107,58,58,.05);}
+.meal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.meal-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--deep);}
+.meal-time{font-size:.68rem;color:var(--muted);background:var(--warm);padding:.2rem .6rem;border-radius:8px;}
+.meal-sug{
+  background:var(--warm);border-radius:8px;padding:.55rem .7rem;
+  font-size:.76rem;color:var(--muted);margin-bottom:8px;
+  border-left:3px solid var(--rose);line-height:1.5;
+}
+.meal-sug strong{display:block;color:var(--deep);font-size:.65rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.recipe-link{
+  display:inline-block;margin-top:6px;color:var(--rose);
+  font-size:.72rem;font-weight:600;text-decoration:none;
+  border-bottom:1.5px solid var(--rose);padding-bottom:1px;
+}
+.recipe-link:hover{opacity:.75;}
+.meal-input{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:.55rem .7rem;font-size:.85rem;color:var(--text);
+  background:var(--cream);outline:none;resize:vertical;min-height:58px;
+  transition:border-color .2s;
+}
+.meal-input:focus{border-color:var(--rose);background:var(--white);}
+.kcal-tag{
+  display:inline-block;background:var(--sage-light);
+  color:#2D5A30;font-size:.65rem;font-weight:600;
+  padding:.12rem .45rem;border-radius:6px;margin-top:4px;
+}
+
+/* Water */
+.glasses-wrap{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;}
+.g-btn{
+  width:34px;height:34px;border-radius:8px;
+  border:1.5px solid var(--border);background:var(--cream);
+  cursor:pointer;font-size:.95rem;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.g-btn.on{background:#B2E4F5;border-color:#4A9EC0;}
+
+/* Movement */
+.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+.day-pill{
+  border-radius:10px;border:1.5px solid var(--border);
+  padding:.45rem .15rem;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--white);
+}
+.day-pill.active{background:var(--deep);border-color:var(--deep);color:var(--white);}
+.day-pill.rest{background:var(--sage-light);border-color:var(--sage);}
+.day-name{font-size:.6rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.day-type{font-size:.52rem;margin-top:2px;color:inherit;opacity:.75;}
+
+.exercise-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:12px;}
+.ex-item{
+  background:var(--cream);border-radius:10px;padding:10px;
+  border:1.5px solid var(--border);display:flex;align-items:flex-start;gap:8px;
+}
+.ex-check{width:16px;height:16px;accent-color:var(--rose);cursor:pointer;flex-shrink:0;margin-top:2px;}
+.ex-icon{font-size:1.3rem;flex-shrink:0;}
+.ex-info .ex-name{font-size:.83rem;font-weight:600;color:var(--deep);}
+.ex-info .ex-desc{font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.4;}
+
+.notes-area{
+  width:100%;border:1.5px solid var(--border);border-radius:8px;
+  padding:.6rem .75rem;font-size:.85rem;color:var(--text);
+  background:var(--cream);outline:none;resize:vertical;min-height:70px;
+  transition:border-color .2s;
+}
+.notes-area:focus{border-color:var(--rose);background:var(--white);}
+
+/* Tips */
+.tips-card{
+  background:linear-gradient(135deg,var(--deep),#8B4513);
+  color:var(--white);border-radius:var(--r);padding:18px;margin-bottom:14px;
+}
+.tips-card h3{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:12px;opacity:.95;}
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}
+.tip-item{
+  background:rgba(255,255,255,.1);border-radius:8px;padding:10px;
+  font-size:.77rem;line-height:1.55;border:1px solid rgba(255,255,255,.12);
+}
+.tip-item strong{display:block;margin-bottom:3px;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;opacity:.8;}
+
+/* Settings */
+.pchange-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:10px;}
+.pchange-input{
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:.5rem .65rem;font-size:.9rem;color:var(--text);
+  background:var(--cream);outline:none;width:100%;
+}
+.pchange-input:focus{border-color:var(--rose);}
+.pmsg{font-size:.75rem;min-height:18px;margin-top:6px;}
+
+/* Save / buttons */
+.save-btn{
+  background:linear-gradient(135deg,var(--deep),var(--rose));
+  color:var(--white);border:none;border-radius:10px;
+  padding:.75rem 1.4rem;font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:all .2s;letter-spacing:.5px;
+}
+.save-btn:hover{opacity:.9;transform:translateY(-1px);}
+.save-btn.full{width:100%;}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:1.2rem;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--deep);color:var(--white);
+  padding:.6rem 1.4rem;border-radius:30px;
+  font-size:.82rem;font-weight:600;z-index:999;
+  transition:transform .3s;box-shadow:0 4px 20px rgba(107,58,58,.3);
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .gate-logo{font-size:1.8rem;}
+  .price-big,.local-price{font-size:2.4rem;}
+  .week-days{grid-template-columns:repeat(4,1fr);}
+  .dash-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     SCREEN 1 — THE GATE
+════════════════════════════════════════════ -->
+<div id="screen1">
+  <div class="gate-logo">MenoPower Pro</div>
+  <div class="gate-tagline">Wellness for Women 50+</div>
+
+  <div class="gate-card">
+
+    <!-- Pass toggle -->
+    <div class="pass-toggle">
+      <button class="pass-btn active" id="btn-global" onclick="switchPass('global')">🌍 Global Pass ($39)</button>
+      <button class="pass-btn"        id="btn-local"  onclick="switchPass('local')">🇮🇳 Local Pass (₹999)</button>
+    </div>
+
+    <!-- Global panel -->
+    <div class="global-panel" id="panel-global">
+      <div class="price-big">$39</div>
+      <div class="price-sub">One-time payment · Lifetime access</div>
+      <a class="gumroad-btn" href="https://wjsaclhstudio.gumroad.com/l/mhobzz" target="_blank" onclick="setTimeout(openScreen2, 400)">
+        ✦ Pay $39
+      </a>
+    </div>
+
+    <!-- Local panel -->
+    <div class="local-panel" id="panel-local">
+      <div class="local-price">₹999</div>
+      <div class="local-sub">One-time payment · Lifetime access</div>
+      <a class="gumroad-btn" href="https://wjsaclhstudio.gumroad.com/l/mhobzz" target="_blank" onclick="setTimeout(openScreen2, 400)">
+        ✦ Pay ₹999
+      </a>
+    </div>
+
+    <!-- Divider -->
+    <div class="gate-divider">owner access</div>
+
+    <!-- PIN -->
+    <div class="pin-hint">Enter PIN to unlock</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+      <button class="pin-key" onclick="pinKey('0')">0</button>
+      <button class="pin-key blank"></button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SCREEN 2 — LICENSE ENTRY
+════════════════════════════════════════════ -->
+<div id="screen2">
+  <div class="s2-logo">MenoPower Pro</div>
+  <div class="s2-sub">Activate Your License</div>
+
+  <div class="s2-card">
+    <div class="s2-rule">
+      <strong>🔐 Security Rule</strong>
+      This profile allows a maximum of <strong>4 registered devices only</strong>.
+      Setting your custom PIN anchors this device profile.
+    </div>
+
+    <div class="s2-field">
+      <label>Email Address</label>
+      <input type="email" id="s2-email" placeholder="you@example.com"/>
+    </div>
+    <div class="s2-field">
+      <label>Gumroad Order Number</label>
+      <input type="text" id="s2-utr" placeholder="e.g. ABC123XYZ (from your receipt email)" maxlength="20"/>
+    </div>
+    <div class="s2-field">
+      <label>Create Your Login PIN (min 4 digits)</label>
+      <input type="password" id="s2-pin" placeholder="Choose a PIN you'll remember"/>
+    </div>
+    <div class="s2-field">
+      <label>Confirm PIN</label>
+      <input type="password" id="s2-pin2" placeholder="Re-enter PIN"
+        onkeydown="if(event.key==='Enter')activateLicense()"/>
+    </div>
+
+    <div class="s2-msg" id="s2-msg"></div>
+
+    <button class="s2-submit" onclick="activateLicense()">
+      ✦ Verify and Activate App License
+    </button>
+    <p class="s2-fine">Your details are stored only on this device. We do not send them anywhere.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     SCREEN 3 — THE APP
+════════════════════════════════════════════ -->
+<div id="screen3">
+
+  <!-- Header -->
+  <div class="hdr">
+    <button class="lock-btn" onclick="lockApp()">🔒 Lock</button>
+    <h1>✦ MenoPower Pro ✦</h1>
+    <p>Daily Wellness Tracker · Women 50+</p>
+    <button class="share-btn" id="share-trigger" style="display:none" onclick="launchPost()">🚀 Share</button>
+  </div>
+
+  <!-- ShareCard capture area — owner only, never shown to buyers -->
+  <div id="capture-area" style="position:absolute; left:-9999px; top:-9999px; width:1000px; height:1500px; background:linear-gradient(135deg,#2C1810,#1a0f0a); padding:80px 70px; box-sizing:border-box; font-family:'Inter',sans-serif; color:#FAFAFA;">
+    <div style="font-family:'Playfair Display',serif; font-size:48px; color:#C9A96E; letter-spacing:1px; margin-bottom:40px;">MenoPower Pro</div>
+    <div style="font-family:'Playfair Display',serif; font-size:64px; font-weight:700; line-height:1.25; color:#FAFAFA; margin-bottom:30px;">
+      Feel powerful<br/><span style="color:#C9A96E; font-style:italic;">after 50.</span>
+    </div>
+    <div style="font-size:26px; color:#E8C4B8; margin-bottom:60px;">50 के बाद खुद को मजबूत महसूस करें।</div>
+    <div style="font-size:42px; font-weight:700; color:#FAFAFA;">$39 <span style="font-size:24px; color:#8B6355;">/ ₹999</span></div>
+    <div style="margin-top:50px; font-size:18px; letter-spacing:2px; color:#8B6355; text-transform:uppercase;">© 2026 WJSACLH Studio</div>
+  </div>
+
+  <!-- Staleness reminder -->
+  <div id="staleness-banner" style="display:none; background:#FFF3CD; color:#6B4F1D; padding:.7rem 1rem; font-size:.8rem; text-align:center; border-bottom:1px solid #E8D8B0;"></div>
+
+  <!-- ── Target vs Achieved Dashboard ── -->
+  <div class="dashboard">
+    <div class="dash-title">📊 Target vs. Achieved</div>
+    <div class="dash-grid">
+
+      <div class="dash-card">
+        <div class="dash-card-top">
+          <span class="dash-label">Weight Lost</span>
+          <span class="dash-icon">⚖️</span>
+        </div>
+        <div class="dash-nums">
+          <span class="dash-achieved" id="dash-lost">0</span>
+          <span class="dash-target">/ 20 kg</span>
+        </div>
+        <div class="dash-bar-wrap"><div class="dash-bar-fill" id="dash-bar-weight" style="width:0%"></div></div>
+        <div class="dash-pct" id="dash-pct-weight">0%</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-top">
+          <span class="dash-label">Active Days</span>
+          <span class="dash-icon">🏃‍♀️</span>
+        </div>
+        <div class="dash-nums">
+          <span class="dash-achieved" id="dash-active">0</span>
+          <span class="dash-target">/ 5 days</span>
+        </div>
+        <div class="dash-bar-wrap"><div class="dash-bar-fill" id="dash-bar-active" style="width:0%"></div></div>
+        <div class="dash-pct" id="dash-pct-active">0%</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-top">
+          <span class="dash-label">Water Today</span>
+          <span class="dash-icon">💧</span>
+        </div>
+        <div class="dash-nums">
+          <span class="dash-achieved" id="dash-water">0</span>
+          <span class="dash-target">/ 8 glasses</span>
+        </div>
+        <div class="dash-bar-wrap"><div class="dash-bar-fill" id="dash-bar-water" style="width:0%"></div></div>
+        <div class="dash-pct" id="dash-pct-water">0%</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-top">
+          <span class="dash-label">Meals Logged</span>
+          <span class="dash-icon">🍽️</span>
+        </div>
+        <div class="dash-nums">
+          <span class="dash-achieved" id="dash-meals">0</span>
+          <span class="dash-target">/ 4 meals</span>
+        </div>
+        <div class="dash-bar-wrap"><div class="dash-bar-fill" id="dash-bar-meals" style="width:0%"></div></div>
+        <div class="dash-pct" id="dash-pct-meals">0%</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <button class="nav-btn on"  onclick="nav('profile',this)">👤 Profile</button>
+    <button class="nav-btn"     onclick="nav('meals',this)">🍽️ Meals</button>
+    <button class="nav-btn"     onclick="nav('movement',this)">🏃‍♀️ Movement</button>
+    <button class="nav-btn"     onclick="nav('tips',this);loadDailyTips()">🌸 Tips</button>
+    <button class="nav-btn"     onclick="nav('settings',this)">⚙️ Settings</button>
+  </div>
+
+  <!-- ══ PANEL: PROFILE ══ -->
+  <div class="panel on" id="panel-profile">
+    <div class="wrap">
+      <div class="sec-title">👤 My Profile</div>
+      <div class="card">
+        <div class="profile-grid">
+          <div class="pf">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Your name" oninput="saveData()"/>
+          </div>
+          <div class="pf">
+            <label>Date</label>
+            <input type="date" id="date" oninput="saveData()"/>
+          </div>
+          <div class="pf">
+            <label>Age</label>
+            <select id="age" onchange="saveData()">
+              <option value="">Select</option>
+              <option>48</option><option>49</option><option>50</option>
+              <option>51</option><option>52</option><option>53</option>
+              <option>54</option><option>55</option><option>56</option>
+            </select>
+          </div>
+          <div class="pf">
+            <label>Current Weight (kg)</label>
+            <input type="number" id="weight" placeholder="e.g. 76" oninput="calcBMI();saveData()"/>
+          </div>
+          <div class="pf">
+            <label>Height (cm)</label>
+            <input type="number" id="height" placeholder="e.g. 158" oninput="calcBMI();saveData()"/>
+          </div>
+          <div class="bmi-box">
+            <div class="bmi-num" id="bmiVal">—</div>
+            <div class="bmi-lbl">BMI</div>
+            <div class="bmi-cat" id="bmiCat">Enter weight & height</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:10px;">📉 Weight Progress</div>
+        <div class="profile-grid">
+          <div class="pf">
+            <label>Starting Weight (kg)</label>
+            <input type="number" id="startWt" placeholder="e.g. 85" oninput="updateProg();saveData()"/>
+          </div>
+          <div class="pf">
+            <label>Lost So Far (kg)</label>
+            <input type="number" id="lostSoFar" placeholder="e.g. 3" oninput="updateProg();saveData()"/>
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <div class="prog-labels">
+            <span>Progress to 20kg goal</span>
+            <span id="progPct">0%</span>
+          </div>
+          <div class="prog-wrap"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="pf" style="margin-bottom:10px;">
+          <label>Energy Level Today</label>
+          <select id="energyLevel" onchange="saveData()">
+            <option value="">Select</option>
+            <option>⚡ High</option><option>🔋 Medium</option><option>😴 Low</option>
+          </select>
+        </div>
+        <div class="pf" style="margin-bottom:10px;">
+          <label>Sleep Last Night (hours)</label>
+          <input type="number" id="sleepHrs" placeholder="e.g. 7" min="3" max="12" oninput="saveData()"/>
+        </div>
+        <div class="pf">
+          <label>How Are You Feeling? (Notes)</label>
+          <textarea class="notes-area" id="dailyNotes" placeholder="Mood, symptoms, wins today..." oninput="saveData()"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: MEALS ══ -->
+  <div class="panel" id="panel-meals">
+    <div class="wrap">
+      <div class="sec-title">🍽️ Today's Meals <span style="font-size:.72rem;font-weight:400;color:var(--muted);">~1,400 kcal target</span></div>
+      <div class="meals-grid">
+
+        <div class="meal-card">
+          <div class="meal-hdr">
+            <div class="meal-title">🌅 Breakfast</div>
+            <div class="meal-time">7:00–8:30 AM</div>
+          </div>
+          <div class="meal-sug" id="sug-breakfast">
+            <strong>💡 Today's Suggestion</strong>
+            Loading…
+          </div>
+          <textarea class="meal-input" id="breakfast" placeholder="What did you eat? Log here…" oninput="saveData();updateMealsDash()"></textarea>
+          <span class="kcal-tag">~300–350 kcal</span>
+        </div>
+
+        <div class="meal-card">
+          <div class="meal-hdr">
+            <div class="meal-title">☀️ Lunch</div>
+            <div class="meal-time">12:30–1:30 PM</div>
+          </div>
+          <div class="meal-sug" id="sug-lunch">
+            <strong>💡 Today's Suggestion</strong>
+            Loading…
+          </div>
+          <textarea class="meal-input" id="lunch" placeholder="What did you eat? Log here…" oninput="saveData();updateMealsDash()"></textarea>
+          <span class="kcal-tag">~450–500 kcal</span>
+        </div>
+
+        <div class="meal-card">
+          <div class="meal-hdr">
+            <div class="meal-title">🌙 Dinner</div>
+            <div class="meal-time">6:30–7:30 PM</div>
+          </div>
+          <div class="meal-sug" id="sug-dinner">
+            <strong>💡 Today's Suggestion</strong>
+            Loading…
+          </div>
+          <textarea class="meal-input" id="dinner" placeholder="What did you eat? Log here…" oninput="saveData();updateMealsDash()"></textarea>
+          <span class="kcal-tag">~350–400 kcal</span>
+        </div>
+
+        <div class="meal-card">
+          <div class="meal-hdr">
+            <div class="meal-title">🍎 Snacks</div>
+            <div class="meal-time">10:30 AM & 4:00 PM</div>
+          </div>
+          <div class="meal-sug" id="sug-snacks">
+            <strong>💡 Today's Suggestion</strong>
+            Loading…
+          </div>
+          <textarea class="meal-input" id="snacks" placeholder="What did you eat? Log here…" oninput="saveData();updateMealsDash()"></textarea>
+          <span class="kcal-tag">~150–200 kcal</span>
+        </div>
+
+      </div>
+
+      <!-- Water tracker -->
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:8px;">💧 Water Intake — Goal: 8 glasses</div>
+        <div class="glasses-wrap" id="glasses"></div>
+        <div id="glass-count" style="font-size:.76rem;color:var(--muted);">0 of 8 glasses</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ PANEL: MOVEMENT ══ -->
+  <div class="panel" id="panel-movement">
+    <div class="wrap">
+      <div class="sec-title">📅 Weekly Movement Plan</div>
+      <div class="card">
+        <p style="font-size:.78rem;color:var(--muted);">5 active days · 2 rest/gentle days — perimenopause-friendly</p>
+        <div class="week-days">
+          <div class="day-pill active" onclick="toggleDay(this)"><div class="day-name">Mon</div><div class="day-type">Walk + Strength</div></div>
+          <div class="day-pill active" onclick="toggleDay(this)"><div class="day-name">Tue</div><div class="day-type">Yoga 40m</div></div>
+          <div class="day-pill active" onclick="toggleDay(this)"><div class="day-name">Wed</div><div class="day-type">Walk + Core</div></div>
+          <div class="day-pill rest"  ><div class="day-name">Thu</div><div class="day-type">Rest / Stretch</div></div>
+          <div class="day-pill active" onclick="toggleDay(this)"><div class="day-name">Fri</div><div class="day-type">Dance / Swim</div></div>
+          <div class="day-pill active" onclick="toggleDay(this)"><div class="day-name">Sat</div><div class="day-type">Strength + Walk</div></div>
+          <div class="day-pill rest"  ><div class="day-name">Sun</div><div class="day-type">Rest / Gentle</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:10px;">✅ Today's Exercise Log</div>
+        <div class="exercise-grid">
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex1" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🚶‍♀️</span>
+            <div class="ex-info"><div class="ex-name">Brisk Walk</div><div class="ex-desc">30–45 min. Best for heart & hormonal balance.</div></div>
+          </div>
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex2" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🏋️‍♀️</span>
+            <div class="ex-info"><div class="ex-name">Strength Training</div><div class="ex-desc">Light weights / resistance bands 2–3×/week.</div></div>
+          </div>
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex3" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🧘‍♀️</span>
+            <div class="ex-info"><div class="ex-name">Yoga / Stretching</div><div class="ex-desc">20–40 min. Reduces cortisol, aids sleep.</div></div>
+          </div>
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex4" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🕺</span>
+            <div class="ex-info"><div class="ex-name">Dance / Zumba</div><div class="ex-desc">30 min. Fun cardio, lifts mood.</div></div>
+          </div>
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex5" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🏊‍♀️</span>
+            <div class="ex-info"><div class="ex-name">Swimming</div><div class="ex-desc">30 min. Low impact, full body.</div></div>
+          </div>
+          <div class="ex-item">
+            <input type="checkbox" class="ex-check" id="ex6" onchange="saveData();updateActiveDash()"/>
+            <span class="ex-icon">🪜</span>
+            <div class="ex-info"><div class="ex-name">Stair Climbing</div><div class="ex-desc">10–15 min. Tones lower body, builds bone.</div></div>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:600;display:block;margin-bottom:4px;">Additional Movement Notes</label>
+          <input type="text" id="movementNotes" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:.88rem;color:var(--text);background:var(--cream);outline:none;" placeholder="e.g. Walked 6,000 steps, 20 min yoga…" oninput="saveData()"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: TIPS ══ -->
+  <div class="panel" id="panel-tips">
+    <div class="wrap">
+      <div class="tips-card" id="daily-tips-card">
+        <h3 id="tips-heading">🌸 Today's Wellness Focus</h3>
+        <div class="tips-grid" id="tips-grid">
+          <!-- filled by JS daily rotation -->
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-bottom:10px;">🎯 Daily Targets</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;">
+          <div style="background:var(--warm);border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--deep);">1,400</div>
+            <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;">kcal/day</div>
+          </div>
+          <div style="background:var(--sage-light);border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--deep);">60–80g</div>
+            <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;">protein</div>
+          </div>
+          <div style="background:#EEF4FF;border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--deep);">8+</div>
+            <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;">glasses water</div>
+          </div>
+          <div style="background:#FFF5E4;border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--deep);">~6 mo</div>
+            <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px;">to 20kg goal</div>
+          </div>
+        </div>
+        <p style="font-size:.72rem;color:var(--muted);margin-top:10px;line-height:1.6;">⚠️ This tracker is a wellness guide, not medical advice. Always consult your doctor before starting a new diet or exercise plan.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: SETTINGS ══ -->
+  <div class="panel" id="panel-settings">
+    <div class="wrap">
+      <div class="sec-title">⚙️ Settings</div>
+
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-top:0;">🔐 Change Your PIN</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.6;">Update your login PIN. Enter your current PIN (or original 1234), then set a new one.</p>
+        <div class="pchange-grid">
+          <div>
+            <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;">Current PIN</label>
+            <input class="pchange-input" type="password" id="cur-pin" placeholder="Current PIN" maxlength="20"/>
+          </div>
+          <div>
+            <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;">New PIN</label>
+            <input class="pchange-input" type="password" id="new-pin" placeholder="New PIN"/>
+          </div>
+          <div>
+            <label style="font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600;">Confirm New PIN</label>
+            <input class="pchange-input" type="password" id="confirm-pin" placeholder="Confirm"/>
+          </div>
+        </div>
+        <button class="save-btn" style="margin-top:10px;" onclick="changePin()">🔐 Update PIN</button>
+        <div class="pmsg" id="pin-change-msg"></div>
+      </div>
+
+      <div class="card">
+        <div class="sec-title" style="font-size:1rem;margin-top:0;">💾 Data</div>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.6;">All your data is stored locally on this device. Clear it to reset the app completely.</p>
+        <button class="save-btn" onclick="saveNow()" style="margin-right:8px;">💾 Save Now</button>
+        <button onclick="clearData()" style="background:none;border:1.5px solid var(--rose);color:var(--rose);border-radius:10px;padding:.65rem 1.2rem;font-size:.85rem;font-weight:600;cursor:pointer;">🗑️ Clear All Data</button>
+      </div>
+
+      <div class="card" style="text-align:center;padding:14px;">
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.8;letter-spacing:.5px;">
+          © 2026 WJSACLH · All Rights Reserved<br>
+          <span style="font-size:.65rem;opacity:.7;">MenoPower Pro — Wellness for Women 50+</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end screen3 -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════
+   SCREEN LOGIC — 3-SCREEN FLOW
+   Screen 1: Gate (pay $99 / PIN)
+     · 1-2-3-4 → backdoor → Screen 3 directly
+     · "I Have Transferred" → Screen 2
+   Screen 2: License entry → Screen 3
+   Screen 3: Full app
+══════════════════════════════════════════════ */
+
+const OWNER_PIN      = '2026';     // hidden backdoor → jumps to Screen 3
+const DEFAULT_BUYER  = '1234';     // default PIN given to buyers
+
+function getLicensePIN(){ return localStorage.getItem('meno_pin') || ''; }
+
+/* ── Pass toggle ── */
+function switchPass(type){
+  document.getElementById('panel-global').style.display = type === 'global' ? 'block' : 'none';
+  document.getElementById('panel-local').style.display  = type === 'local'  ? 'block' : 'none';
+  document.getElementById('btn-global').classList.toggle('active', type === 'global');
+  document.getElementById('btn-local').classList.toggle('active',  type === 'local');
+}
+
+/* ── PIN keypad ── */
+let pinInput = '';
+let isOwnerSession = false;
+
+function pinKey(k){
+  if(pinInput.length >= 4) return;
+  pinInput += k;
+  updatePinDots();
+  if(pinInput.length === 4) setTimeout(checkPin, 180);
+}
+
+function pinDel(){
+  pinInput = pinInput.slice(0,-1);
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+}
+
+function updatePinDots(){
+  for(let i = 0; i < 4; i++){
+    document.getElementById('d'+i).classList.toggle('filled', i < pinInput.length);
+  }
+}
+
+function checkPin(){
+  /* ── Owner backdoor: straight to Screen 3 ── */
+  if(pinInput === OWNER_PIN){
+    isOwnerSession = true;
+    show('screen3');
+    loadApp();
+    return;
+  }
+  /* ── Buyer with set PIN ── */
+  const stored = getLicensePIN();
+  if(stored && pinInput === stored){
+    isOwnerSession = false;
+    show('screen3');
+    loadApp();
+    return;
+  }
+  /* ── Wrong ── */
+  document.getElementById('pin-error').textContent = '✗ Incorrect PIN';
+  pinInput = '';
+  updatePinDots();
+}
+
+/* ── Screens ── */
+function show(id){
+  ['screen1','screen2','screen3'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? (id === 'screen2' ? 'flex' : 'block') : 'none';
+  });
+}
+
+function openScreen2(){
+  show('screen2');
+}
+
+/* ── Screen 2: Activate License ── */
+function activateLicense(){
+  const email = document.getElementById('s2-email').value.trim();
+  const utr   = document.getElementById('s2-utr').value.trim();
+  const pin   = document.getElementById('s2-pin').value.trim();
+  const pin2  = document.getElementById('s2-pin2').value.trim();
+  const msg   = document.getElementById('s2-msg');
+
+  if(!email || !utr){
+    msg.style.color='#ffb3b3'; msg.textContent='Please fill in email and transaction ID.'; return;
+  }
+  if(pin.length < 4){
+    msg.style.color='#ffb3b3'; msg.textContent='PIN must be at least 4 characters.'; return;
+  }
+  if(pin !== pin2){
+    msg.style.color='#ffb3b3'; msg.textContent='PINs do not match.'; return;
+  }
+  localStorage.setItem('meno_pin',     pin);
+  localStorage.setItem('meno_email',   email);
+  localStorage.setItem('meno_utr',     utr);
+  localStorage.setItem('meno_activated','yes');
+  msg.style.color='#b3ffd1'; msg.textContent='✓ License activated! Opening your app…';
+  setTimeout(()=>{ show('screen3'); loadApp(); }, 700);
+}
+
+/* ── Lock ── */
+function lockApp(){
+  pinInput = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  show('screen1');
+}
+
+/* ── Change PIN ── */
+function changePin(){
+  const cur = document.getElementById('cur-pin').value;
+  const nw  = document.getElementById('new-pin').value;
+  const cf  = document.getElementById('confirm-pin').value;
+  const msg = document.getElementById('pin-change-msg');
+  const stored = getLicensePIN();
+  if(cur !== OWNER_PIN && cur !== stored && cur !== DEFAULT_BUYER){
+    msg.style.color='var(--rose)'; msg.textContent='✗ Current PIN is incorrect'; return;
+  }
+  if(nw.length < 4){
+    msg.style.color='var(--rose)'; msg.textContent='✗ New PIN must be at least 4 characters'; return;
+  }
+  if(nw !== cf){
+    msg.style.color='var(--rose)'; msg.textContent='✗ PINs do not match'; return;
+  }
+  localStorage.setItem('meno_pin', nw);
+  msg.style.color='var(--sage)'; msg.textContent='✓ PIN changed successfully!';
+  document.getElementById('cur-pin').value = '';
+  document.getElementById('new-pin').value = '';
+  document.getElementById('confirm-pin').value = '';
+}
+
+/* ══ NAV ══ */
+function nav(id, el){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+}
+
+/* ══ TOGGLE DAY ══ */
+function toggleDay(el){
+  if(!el.classList.contains('rest')) el.classList.toggle('active');
+  updateActiveDash();
+  saveData();
+}
+
+/* ══ WATER GLASSES ══ */
+function buildGlasses(){
+  const wrap = document.getElementById('glasses');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  for(let i = 0; i < 8; i++){
+    const b = document.createElement('button');
+    b.className = 'g-btn';
+    b.textContent = '🥛';
+    b.dataset.idx = i;
+    b.onclick = function(){
+      this.classList.toggle('on');
+      this.textContent = this.classList.contains('on') ? '💧' : '🥛';
+      const filled = document.querySelectorAll('.g-btn.on').length;
+      document.getElementById('glass-count').textContent = filled + ' of 8 glasses';
+      updateWaterDash(filled);
+      saveData();
+    };
+    wrap.appendChild(b);
+  }
+}
+
+/* ══ BMI ══ */
+function calcBMI(){
+  const w = parseFloat(document.getElementById('weight').value);
+  const h = parseFloat(document.getElementById('height').value) / 100;
+  if(w && h){
+    const bmi = (w/(h*h)).toFixed(1);
+    document.getElementById('bmiVal').textContent = bmi;
+    let cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal weight ✓' : bmi < 30 ? 'Overweight' : 'Obese';
+    document.getElementById('bmiCat').textContent = cat;
+  }
+}
+
+/* ══ PROGRESS ══ */
+function updateProg(){
+  const lost = parseFloat(document.getElementById('lostSoFar').value) || 0;
+  const pct  = Math.min(Math.round((lost/20)*100), 100);
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+  updateWeightDash(lost);
+}
+
+/* ══ DASHBOARD UPDATERS ══ */
+function updateWeightDash(lost){
+  const v = lost || 0;
+  const pct = Math.min(Math.round((v/20)*100), 100);
+  document.getElementById('dash-lost').textContent     = v;
+  document.getElementById('dash-bar-weight').style.width = pct + '%';
+  document.getElementById('dash-pct-weight').textContent = pct + '%';
+}
+
+function updateActiveDash(){
+  const checked = document.querySelectorAll('.ex-check:checked').length;
+  const pct = Math.min(Math.round((checked/5)*100), 100);
+  document.getElementById('dash-active').textContent    = checked;
+  document.getElementById('dash-bar-active').style.width = pct + '%';
+  document.getElementById('dash-pct-active').textContent = pct + '%';
+}
+
+function updateWaterDash(filled){
+  const pct = Math.min(Math.round((filled/8)*100), 100);
+  document.getElementById('dash-water').textContent     = filled;
+  document.getElementById('dash-bar-water').style.width = pct + '%';
+  document.getElementById('dash-pct-water').textContent = pct + '%';
+}
+
+function updateMealsDash(){
+  const meals = ['breakfast','lunch','dinner','snacks'];
+  const logged = meals.filter(m => document.getElementById(m).value.trim().length > 0).length;
+  const pct = Math.round((logged/4)*100);
+  document.getElementById('dash-meals').textContent     = logged;
+  document.getElementById('dash-bar-meals').style.width = pct + '%';
+  document.getElementById('dash-pct-meals').textContent = pct + '%';
+}
+
+/* ══ DAILY MEAL SUGGESTIONS ══ */
+/* ══ 28-DAY ROTATING MEAL PLAN — unique suggestion every day of the month ══ */
+const DAILY_MEALS = [
+  /* Week 1 */
+  { breakfast:'Vegetable oats upma with flaxseeds + 1 boiled egg + green tea (no sugar)', lunch:'1 cup brown rice + rajma curry + cucumber raita + salad', dinner:'Grilled fish/paneer tikka + 1 roti + sautéed spinach + clear soup', snacks:'Morning: Handful walnuts + 1 apple. Evening: Buttermilk + 2 rice cakes' },
+  { breakfast:'2 boiled eggs + 1 multigrain toast + green tea. Or: oats with berries & low-fat milk', lunch:'2 rotis + dal tadka + bhindi sabzi + curd + salad', dinner:'Grilled chicken breast + 1 roti + steamed broccoli + tomato soup', snacks:'Morning: 10 almonds + 1 guava. Evening: Roasted chana + herbal tea' },
+  { breakfast:'Moong dal chilla (2) with mint chutney + 1 cup low-fat milk', lunch:'1 cup millets/jowar + sambhar + stir-fried veggies + curd', dinner:'Tofu bhurji + 2 rotis + tomato cucumber salad', snacks:'Morning: Greek yogurt + flaxseeds. Evening: Roasted makhana (fox nuts)' },
+  { breakfast:'Poha with peas & peanuts (no potato) + 1 boiled egg + green tea', lunch:'Brown rice pulao (lots of veggies) + dal + raita', dinner:'Egg curry (2 eggs) + 1 roti + steamed vegetables', snacks:'Morning: 1 banana + 5 walnuts. Evening: Sprouts chaat with lemon' },
+  { breakfast:'Ragi dosa (2) + coconut chutney (small) + 1 cup herbal tea', lunch:'2 rotis + chana masala + green salad + buttermilk', dinner:'Baked salmon/paneer + quinoa + steamed greens', snacks:'Morning: Handful of mixed nuts. Evening: Fruit salad (no mango/banana)' },
+  { breakfast:'Vegetable upma with seeds + 1 boiled egg white + black coffee', lunch:'1 cup brown rice + fish curry (light) + salad + curd', dinner:'Chicken soup + 1 multigrain roti + stir-fried cabbage', snacks:'Morning: Apple + almond butter (1 tsp). Evening: Cucumber sticks + hummus' },
+  { breakfast:'Idli (2–3 small) + sambar + green chutney + herbal tea', lunch:'2 rotis + palak paneer (light) + cucumber salad + dal', dinner:'Grilled prawns/tofu + sweet potato (small) + green beans', snacks:'Morning: Dates (2) + almonds. Evening: Roasted chana + lemon water' },
+  /* Week 2 */
+  { breakfast:'Besan chilla (2) with tomato & coriander + 1 cup warm turmeric milk', lunch:'1 cup jowar/bajra roti + methi dal + baingan bharta + raita', dinner:'Steamed fish with lemon + 1 roti + sautéed zucchini', snacks:'Morning: 1 pear + 5 cashews. Evening: Roasted pumpkin seeds + green tea' },
+  { breakfast:'Overnight oats with chia seeds, flaxseeds, berries + black coffee', lunch:'Brown rice khichdi (light) + curd + stir-fried beans', dinner:'Grilled tofu tikka + 2 rotis + mint raita + onion salad', snacks:'Morning: Boiled egg + cucumber slices. Evening: 1 cup warm jeera water + 10 pistachios' },
+  { breakfast:'Semolina (suji) upma with curry leaves & mustard + 1 boiled egg white', lunch:'2 multigrain rotis + rajma masala + salad + curd', dinner:'Chicken keema (lean) + 1 roti + steamed cauliflower', snacks:'Morning: Handful blueberries + 5 walnuts. Evening: Buttermilk with rock salt' },
+  { breakfast:'Paneer bhurji (light oil) + 1 multigrain toast + green tea', lunch:'1 cup brown rice + moong dal + palak sabzi + salad', dinner:'Baked chicken/mushroom + 1 jowar roti + tomato soup', snacks:'Morning: 1 orange + 10 almonds. Evening: Roasted flaxseeds + fennel tea' },
+  { breakfast:'Ragi porridge with banana & honey (1 tsp) + herbal tea', lunch:'2 rotis + arhar dal + lauki sabzi + cucumber raita', dinner:'Prawn masala (light) + 1 roti + steamed spinach', snacks:'Morning: Greek yogurt with 1 tsp chia. Evening: Roasted chana chaat with lemon' },
+  { breakfast:'Vegetable daliya (broken wheat) with flaxseeds + green tea', lunch:'Quinoa salad with chickpeas, cucumber, tomato, lemon dressing', dinner:'Paneer tikka (grilled) + 2 rotis + stir-fried capsicum', snacks:'Morning: 1 apple + 5 almonds. Evening: Makhana roasted in ghee (1 tsp)' },
+  { breakfast:'Mini oats pancakes (no sugar) + 1 boiled egg + black coffee', lunch:'2 rotis + dal makhani (light) + salad + curd', dinner:'Fish tikka + 1 roti + mixed vegetable soup', snacks:'Morning: Handful strawberries + yogurt. Evening: Sprouts with salt & lemon' },
+  /* Week 3 */
+  { breakfast:'Sabudana khichdi (small portion) + 1 boiled egg + herbal tea', lunch:'1 cup brown rice + sambhar + dry cabbage sabzi + raita', dinner:'Chicken stew (no coconut milk) + 1 multigrain roti + salad', snacks:'Morning: 1 banana + 5 walnuts. Evening: Roasted sunflower seeds + green tea' },
+  { breakfast:'Egg white omelette with spinach & tomato + 1 toast + green tea', lunch:'Millet khichdi with veggies + curd + pickle (small)', dinner:'Soya chunks masala + 2 rotis + cucumber salad', snacks:'Morning: 1 pear + 10 almonds. Evening: Buttermilk + roasted makhana' },
+  { breakfast:'Oats idli (3) + green chutney + 1 cup low-fat milk', lunch:'2 multigrain rotis + chhole masala + onion salad + curd', dinner:'Grilled pomfret/paneer + 1 roti + steamed broccoli & carrot', snacks:'Morning: Boiled egg + tomato slices. Evening: Fennel seed tea + 5 cashews' },
+  { breakfast:'Rava uttapam (small) with onion & tomato + herbal tea', lunch:'1 cup brown rice + yellow moong dal + bhindi fry + raita', dinner:'Egg bhurji (2 eggs) + 2 rotis + stir-fried capsicum', snacks:'Morning: Apple + peanut butter (1 tsp). Evening: Sprouts salad with lemon' },
+  { breakfast:'Amaranth (rajgira) porridge with nuts + 1 boiled egg + green tea', lunch:'2 jowar rotis + spinach dal + bottle gourd sabzi + curd', dinner:'Chicken salad (grilled, no dressing) + 1 roti + tomato soup', snacks:'Morning: 1 kiwi + 10 almonds. Evening: Roasted chana + turmeric milk' },
+  { breakfast:'Flaxseed smoothie (banana, flaxseed, low-fat milk, no sugar) + 2 egg whites', lunch:'Brown rice + fish curry (low oil) + salad + curd', dinner:'Tofu stir-fry with ginger & garlic + 2 rotis + clear soup', snacks:'Morning: Dates (2) + walnuts. Evening: Greek yogurt with berries' },
+  { breakfast:'Pesarattu (moong dosa, 2) + ginger chutney + 1 cup herbal tea', lunch:'2 rotis + dal + aloo (small) methi sabzi + curd + salad', dinner:'Grilled prawns/mushroom + 1 roti + stir-fried French beans', snacks:'Morning: 1 orange + 5 pistachios. Evening: Roasted pumpkin seeds + fennel tea' },
+  /* Week 4 */
+  { breakfast:'Broken wheat (daliya) khichdi with veggies + green tea', lunch:'1 cup millets + dal + dry sabzi + curd', dinner:'Baked chicken/paneer with herbs + 1 roti + mixed greens salad', snacks:'Morning: 1 banana + 10 almonds. Evening: Buttermilk with cumin + makhana' },
+  { breakfast:'Besan (gram flour) pancakes with mint chutney + 1 boiled egg + black coffee', lunch:'2 multigrain rotis + chole masala + cucumber salad + curd', dinner:'Steamed pomfret/tofu with lemon + 1 roti + sautéed greens', snacks:'Morning: 1 guava + 5 walnuts. Evening: Roasted flaxseed chikki (small)' },
+  { breakfast:'Overnight soaked oats with apple, cinnamon, chia seeds + green tea', lunch:'Brown rice + rajma (light) + raita + salad', dinner:'Egg curry (2 eggs, light gravy) + 1 roti + steamed cabbage', snacks:'Morning: Greek yogurt + flaxseeds. Evening: Sprouts chaat + lemon water' },
+  { breakfast:'Ragi mudde (small) + sambar + green tea', lunch:'2 rotis + arhar dal + mixed vegetable sabzi + curd', dinner:'Grilled fish + 1 jowar roti + stir-fried spinach & garlic', snacks:'Morning: 1 apple + 10 almonds. Evening: Roasted chana + herbal tea' },
+  { breakfast:'Vegetable poha with curry leaves & peanuts + boiled egg + green tea', lunch:'1 cup quinoa + chickpea salad + curd + salad', dinner:'Chicken/soya tikka + 2 rotis + onion tomato salad', snacks:'Morning: 1 pear + 5 cashews. Evening: Makhana roasted with turmeric' },
+  { breakfast:'Multigrain dosa (2) + sambhar + green chutney + herbal tea', lunch:'Brown rice + moong dal + lauki sabzi + raita', dinner:'Baked paneer/fish + 1 roti + steamed broccoli + clear soup', snacks:'Morning: Boiled egg + cucumber. Evening: Roasted sunflower seeds + green tea' },
+  { breakfast:'Oats khichdi with veggies & jeera + 1 egg white omelette + green tea', lunch:'2 rotis + palak dal + dry aloo sabzi (small) + curd', dinner:'Grilled chicken/tofu salad + 1 multigrain roti + tomato soup', snacks:'Morning: 1 orange + 10 almonds. Evening: Greek yogurt with chia seeds' }
+];
+
+function recipeLink(mealText){
+  /* Take text before first '+' as the main dish, strip parenthetical notes */
+  let dish = mealText.split('+')[0].trim();
+  dish = dish.replace(/\([^)]*\)/g, '').trim();
+  const query = encodeURIComponent(dish + ' recipe');
+  return ' <a href="https://www.youtube.com/results?search_query=' + query + '" target="_blank" class="recipe-link">▶ Watch recipe</a>';
+}
+
+function loadDailyMeals(){
+  /* Rotates through all 28 days based on day-of-year — fully unique every day */
+  const now   = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff  = now - start;
+  const dayOfYear = Math.floor(diff / 86400000);
+  const idx   = dayOfYear % DAILY_MEALS.length;
+  const meals = DAILY_MEALS[idx];
+  const dateStr = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
+  const label = dateStr + ' — Today\'s Plan';
+  document.getElementById('sug-breakfast').innerHTML = '<strong>💡 ' + label + '</strong>' + meals.breakfast + recipeLink(meals.breakfast);
+  document.getElementById('sug-lunch').innerHTML     = '<strong>💡 ' + label + '</strong>' + meals.lunch + recipeLink(meals.lunch);
+  document.getElementById('sug-dinner').innerHTML    = '<strong>💡 ' + label + '</strong>' + meals.dinner + recipeLink(meals.dinner);
+  document.getElementById('sug-snacks').innerHTML    = '<strong>💡 ' + label + '</strong>' + meals.snacks + recipeLink(meals.snacks);
+}
+
+/* ══ SAVE / LOAD ══ */
+function saveData(){
+  const checkboxes = {};
+  for(let i = 1; i <= 6; i++){
+    const el = document.getElementById('ex'+i);
+    if(el) checkboxes['ex'+i] = el.checked;
+  }
+  const glasses = [];
+  document.querySelectorAll('.g-btn').forEach((b,i) => glasses.push(b.classList.contains('on')));
+
+  const d = {
+    name:          val('name'),
+    date:          val('date'),
+    age:           val('age'),
+    weight:        val('weight'),
+    height:        val('height'),
+    startWt:       val('startWt'),
+    lostSoFar:     val('lostSoFar'),
+    energyLevel:   val('energyLevel'),
+    sleepHrs:      val('sleepHrs'),
+    breakfast:     val('breakfast'),
+    lunch:         val('lunch'),
+    dinner:        val('dinner'),
+    snacks:        val('snacks'),
+    movementNotes: val('movementNotes'),
+    dailyNotes:    val('dailyNotes'),
+    checkboxes,
+    glasses,
+    lastSaved:     new Date().toISOString()
+  };
+  localStorage.setItem('meno_data', JSON.stringify(d));
+}
+
+function val(id){
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function saveNow(){
+  saveData();
+  showToast('✓ Saved successfully!');
+}
+
+function loadData(){
+  document.getElementById('date').valueAsDate = new Date();
+  loadDailyMeals();
+
+  const raw = localStorage.getItem('meno_data');
+  if(!raw) return;
+  const d = JSON.parse(raw);
+
+  const textFields = ['name','date','age','weight','height','startWt','lostSoFar',
+                      'energyLevel','sleepHrs','breakfast','lunch','dinner','snacks',
+                      'movementNotes','dailyNotes'];
+  textFields.forEach(f => {
+    const el = document.getElementById(f);
+    if(el && d[f]) el.value = d[f];
+  });
+
+  if(d.weight && d.height) calcBMI();
+  if(d.lostSoFar) updateProg();
+
+  // Checkboxes
+  if(d.checkboxes){
+    Object.keys(d.checkboxes).forEach(k => {
+      const el = document.getElementById(k);
+      if(el) el.checked = d.checkboxes[k];
+    });
+  }
+
+  // Glasses
+  if(d.glasses){
+    const btns = document.querySelectorAll('.g-btn');
+    let filled = 0;
+    d.glasses.forEach((on, i) => {
+      if(btns[i] && on){
+        btns[i].classList.add('on');
+        btns[i].textContent = '💧';
+        filled++;
+      }
+    });
+    document.getElementById('glass-count').textContent = filled + ' of 8 glasses';
+    updateWaterDash(filled);
+  }
+
+  updateActiveDash();
+  updateMealsDash();
+  checkStaleness(d.lastSaved);
+}
+
+/* ══ STALENESS CHECK ══ */
+function checkStaleness(lastSaved){
+  const banner = document.getElementById('staleness-banner');
+  if(!banner) return;
+  if(!lastSaved){
+    banner.style.display = 'none';
+    return;
+  }
+  const daysSince = Math.floor((new Date() - new Date(lastSaved)) / 86400000);
+  if(daysSince >= 14){
+    banner.style.display = 'block';
+    banner.innerHTML = daysSince >= 60
+      ? `📅 It's been ${daysSince} days since your last update. Your numbers above are from then — log today's weight and progress to see how far you've come.`
+      : `📅 Last updated ${daysSince} days ago. Add today's numbers to keep your progress accurate.`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function loadApp(){
+  buildGlasses();
+  loadData();
+  document.getElementById('share-trigger').style.display = isOwnerSession ? 'inline-block' : 'none';
+}
+
+
+
+function clearData(){
+  if(!confirm('Clear all data? This cannot be undone.')) return;
+  localStorage.removeItem('meno_data');
+  showToast('Data cleared.');
+  setTimeout(()=>location.reload(), 1200);
+}
+
+/* ══ TOAST ══ */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+
+/* ══ 28-DAY ROTATING WELLNESS TIPS ══ */
+const DAILY_TIPS = [
+  /* Day 1 */ { heading:'🌸 Hormone Reset Day', tips:[{icon:'⏰',title:'Eat on a Clock',body:'Your hormones love routine. Eat breakfast by 8 AM, dinner by 7 PM. A consistent window stabilises cortisol and insulin all day.'},{icon:'💧',title:'Warm Water First',body:'2 glasses of warm water before anything else. Flushes lymph, kickstarts digestion and reduces morning bloating instantly.'},{icon:'🧘',title:'5-Min Breathwork',body:'Box breathing (4-4-4-4) for 5 minutes lowers cortisol by up to 20%. Do it before breakfast, not after stress hits.'},{icon:'🥚',title:'Protein at Breakfast',body:'20–30g protein at your first meal controls hunger hormones (ghrelin) for the entire day. Eggs, Greek yogurt, or paneer work perfectly.'},{icon:'🌿',title:'Phytoestrogen Power',body:'Add 1 tbsp flaxseeds to your morning meal. They\'\2e nature\'\2 gentlest estrogen supporters — reduce hot flashes over 3–6 weeks.'}] },
+  /* Day 2 */ { heading:'💪 Strength & Bone Day', tips:[{icon:'🦴',title:'Bone Loss Starts at 50',body:'Estrogen drop accelerates bone loss. Weight-bearing exercise — even a 30-min walk — signals bones to stay dense. Do it daily.'},{icon:'🥛',title:'Calcium Timing',body:'Split calcium across meals — 300mg at lunch, 300mg at dinner. Your body absorbs max 500mg at a time. Ragi, curd, milk, tofu.'},{icon:'☀️',title:'Sunlight = Free D3',body:'15 minutes of morning sun on your arms and legs. D3 deficiency is rampant in Indian women and directly linked to weight gain & fatigue.'},{icon:'💪',title:'Resistance Training',body:'2 sessions per week with light weights or bands maintains muscle mass. Every 500g of muscle burns 50 extra kcal at rest, daily.'},{icon:'🧂',title:'Reduce Salt',body:'High sodium = water retention = the scale lying to you. Reduce salt, skip packaged foods, and watch "puffiness weight" drop in 3 days.'}] },
+  /* Day 3 */ { heading:'🔥 Metabolism Boost Day', tips:[{icon:'🌡️',title:'Cold-to-Warm Contrast',body:'End your shower with 30 seconds cold water. Activates brown fat, boosts metabolism, and dramatically improves mood within minutes.'},{icon:'🫐',title:'Eat the Rainbow',body:'Aim for 5 different coloured vegetables today. Each colour = different antioxidants that fight perimenopause inflammation and belly fat.'},{icon:'🚶',title:'Walk After Every Meal',body:'10-minute walk post-meal drops blood sugar spike by 30%. Three 10-min walks beat one 30-min walk for metabolic impact.'},{icon:'🫚',title:'Good Fats Only',body:'Replace refined oil with cold-pressed coconut or groundnut oil. Good fats support estrogen production and keep you full longer.'},{icon:'🕯️',title:'No Screens After 9 PM',body:'Blue light suppresses melatonin by 2 hours. Poor sleep = high ghrelin (hunger hormone) next day. Screen off = easier weight loss.'}] },
+  /* Day 4 */ { heading:'😴 Rest & Recovery Day', tips:[{icon:'🌙',title:'Sleep is Your Medication',body:'7–8 hours is non-negotiable at 50+. During deep sleep, growth hormone repairs muscle and burns fat. You cannot out-exercise bad sleep.'},{icon:'🍌',title:'Magnesium at Night',body:'Banana, pumpkin seeds, or dark chocolate (small square) before bed. Magnesium relaxes muscles, reduces night sweats, improves sleep quality.'},{icon:'🧊',title:'Cool Your Room',body:'Keep bedroom below 20°C if possible. Cooler rooms reduce night sweats by 40% and dramatically improve deep sleep stages.'},{icon:'📵',title:'Digital Detox by 8 PM',body:'Set a hard stop on social media at 8 PM. Evening scrolling raises cortisol, delays sleep, and increases emotional eating the next morning.'},{icon:'🛁',title:'Warm Bath Ritual',body:'20-min warm bath 1 hour before bed. The body-cooling effect after the bath triggers deep sleep. Add Epsom salts for magnesium absorption.'}] },
+  /* Day 5 */ { heading:'🧠 Mind-Body Focus Day', tips:[{icon:'🧘',title:'Meditation Shrinks Belly',body:'Stress-induced cortisol specifically deposits fat around the abdomen. 10 minutes of daily meditation measurably reduces cortisol within 8 weeks.'},{icon:'📔',title:'Gratitude Journaling',body:'Write 3 things you\'\2e grateful for each morning. Shifts the nervous system from stress mode to rest-and-digest — reducing cortisol all day.'},{icon:'🌸',title:'Manage Hot Flashes',body:'Triggers: spicy food, alcohol, hot drinks, stress, tight clothes. Identify your top 3 triggers this week and eliminate one at a time.'},{icon:'🤝',title:'Social Connection',body:'Loneliness raises cortisol. 15 minutes of genuine connection daily — a call, a walk with a friend — is proven to reduce abdominal fat over time.'},{icon:'🎵',title:'Music as Medicine',body:'30 minutes of your favourite music lowers cortisol by 12%. Play it during cooking or your evening walk for an effortless mood and metabolism lift.'}] },
+  /* Day 6 */ { heading:'🥗 Gut Health Day', tips:[{icon:'🦠',title:'Your Gut Controls Your Weight',body:'Perimenopause disrupts gut microbiome. A healthy gut absorbs nutrients better, reduces bloating and directly regulates hunger hormones.'},{icon:'🥣',title:'Probiotic Every Day',body:'1 cup curd or buttermilk daily replenishes good bacteria. Kefir or homemade yogurt is even better. Do this consistently for 30 days.'},{icon:'🫘',title:'Prebiotic Foods',body:'Feed your good bacteria: raw garlic, onion, banana, oats, flaxseeds. These are fuel for beneficial gut flora — eat at least 2 daily.'},{icon:'🍵',title:'Herbal Teas',body:'Replace evening tea/coffee with ginger-turmeric tea or fennel tea. Reduces bloating, aids digestion, and avoids caffeine disrupting sleep.'},{icon:'🚫',title:'Ditch Ultra-Processed',body:'If it has more than 5 ingredients on the label, your gut struggles with it. Replace one processed snack this week with a whole food alternative.'}] },
+  /* Day 7 */ { heading:'⚡ Energy Recharge Day', tips:[{icon:'🥜',title:'Smart Snacking',body:'Combine protein + fat for snacks: almonds + fruit, peanut butter + apple, hummus + vegetables. This prevents blood sugar crashes and 3 PM fatigue.'},{icon:'☕',title:'Coffee Timing Matters',body:'Wait 90 minutes after waking before your first coffee. This allows your natural cortisol peak to do its job without caffeine interference.'},{icon:'🩸',title:'Check Your Iron',body:'Iron deficiency is common at 50+ and causes extreme fatigue. Get ferritin tested. Eat iron-rich foods with Vitamin C to triple absorption.'},{icon:'💃',title:'Dance for 15 Minutes',body:'Any music, any moves. 15 minutes of dancing raises energy for 2–4 hours, boosts mood hormones, and burns 80–100 kcal. No gym needed.'},{icon:'🌬️',title:'Breathe Deeply',body:'Most women over 50 breathe shallowly. 5 deep belly breaths every hour oxygenates blood, reduces fatigue and sharpens mental clarity instantly.'}] },
+  /* Day 8 */ { heading:'🌿 Anti-Inflammation Day', tips:[{icon:'🟡',title:'Turmeric is Your Friend',body:'1/2 tsp turmeric + black pepper daily reduces inflammatory markers linked to perimenopause weight gain. Add to dal, milk, or warm water.'},{icon:'🐟',title:'Omega-3 Priority',body:'Fatty fish 2×/week (mackerel, sardines, salmon) or 1 tbsp flaxseeds daily. Omega-3 reduces hot flashes, joint pain and belly fat.'},{icon:'🍇',title:'Antioxidant Colours',body:'Berries, pomegranate, amla, dark leafy greens. These neutralise free radicals that increase with hormonal change and slow your metabolism.'},{icon:'🧄',title:'Raw Garlic Daily',body:'1 clove raw garlic on empty stomach or with salad. Powerful anti-inflammatory, supports liver detox, and mildly boosts metabolism.'},{icon:'🚫',title:'Reduce Refined Sugar',body:'Sugar triggers inflammation, disrupts sleep, feeds bad gut bacteria and converts directly to belly fat. Replace with dates, jaggery or fruit.'}] },
+  /* Day 9 */ { heading:'💆 Self-Care Science Day', tips:[{icon:'🌅',title:'Morning Sunlight First',body:'10 minutes of morning light within 30 minutes of waking. Sets your circadian rhythm, improves sleep that night, and boosts daytime energy.'},{icon:'🛁',title:'Dry Brushing',body:'Brush skin in upward strokes before shower. Stimulates lymph drainage, reduces water retention and cellulite appearance over 4–6 weeks.'},{icon:'💆',title:'Scalp Massage Daily',body:'5-minute scalp massage with coconut or castor oil. Stimulates blood flow, reduces stress hormones, and combats perimenopause hair thinning.'},{icon:'🧴',title:'Moisturise Strategically',body:'Estrogen drop dries skin. Apply moisturiser within 3 minutes of showering on damp skin. Reduces water loss by 70% compared to dry application.'},{icon:'🌿',title:'Ashwagandha Benefits',body:'This adaptogen reduces cortisol, improves thyroid function and supports hormonal balance. Consult your doctor about a 300mg supplement.'}] },
+  /* Day 10 */ { heading:'🏃 Movement Medicine Day', tips:[{icon:'🏊',title:'Water Exercise',body:'Swimming or water aerobics is the single best workout for 50+ — zero joint stress, full body, builds bone density and burns 400 kcal/hour.'},{icon:'🧗',title:'Incidental Movement',body:'Take stairs always. Park 10 minutes away. Stand on calls. These micro-movements add 300–500 extra kcal burned per day without effort.'},{icon:'🤸',title:'Hip Flexor Stretch',body:'Sitting shortens hip flexors, increases lower back pain and inhibits glute activation. Stretch hips for 5 minutes daily — life-changing.'},{icon:'🦵',title:'Squats for Hormones',body:'10 squats every morning signals the body to maintain lower body muscle. Muscle is your metabolic engine — protect it daily.'},{icon:'🧘',title:'Yoga for Hormones',body:'These specific poses help balance hormones: Child\'\2 Pose, Legs Up the Wall, Reclined Twist. Hold each 2 minutes daily for 30-day results.'}] },
+  /* Day 11 */ { heading:'🍵 Hormone-Healing Foods Day', tips:[{icon:'🫘',title:'Soy for Hot Flashes',body:'Fermented soy (miso, tempeh, tofu) contains isoflavones that act like mild estrogen. Studies show 45% reduction in hot flash frequency.'},{icon:'🥦',title:'Cruciferous Vegetables',body:'Broccoli, cauliflower, cabbage support liver detoxification of excess estrogen. Aim for 1 serving daily to reduce hormonal weight gain.'},{icon:'🌰',title:'Sesame Seeds',body:'2 tbsp sesame (til) daily. Rich in lignans that support estrogen metabolism, calcium for bones, and zinc for thyroid function.'},{icon:'🫐',title:'Berries Daily',body:'Any berries — blueberry, strawberry, amla. High in anthocyanins that specifically reduce inflammatory fat storage around the abdomen.'},{icon:'🥑',title:'Healthy Fat Timing',body:'Eat your healthy fats (avocado, nuts, coconut) at lunch, not dinner. Evening fats can disturb sleep and increase overnight cortisol.'}] },
+  /* Day 12 */ { heading:'📊 Track & Transform Day', tips:[{icon:'📏',title:'Measure Waist Not Just Weight',body:'Waist under 80cm for women over 50 is the health target. Measure weekly — it drops before the scale moves and keeps you motivated.'},{icon:'📸',title:'Monthly Progress Photos',body:'Take front and side photos monthly in the same outfit, same light. Visual proof often shows progress the scale misses completely.'},{icon:'📔',title:'Food Journal Works',body:'Tracking what you eat (even roughly) reduces intake by 15–20% without dieting. Use the Meals tab here — it takes 30 seconds.'},{icon:'⚖️',title:'Weigh Weekly Not Daily',body:'Daily weight fluctuates 1–2 kg from water and hormones. Weekly morning weight (same day, after toilet) is the only meaningful number.'},{icon:'🎯',title:'Celebrate Small Wins',body:'Every 0.5 kg lost, every 3 exercise days, every week with 8 glasses water — celebrate it. Dopamine from small wins fuels the next step.'}] },
+  /* Day 13 */ { heading:'🌙 Evening Ritual Day', tips:[{icon:'🍽️',title:'Dinner Before 7:30 PM',body:'Your digestive fire (agni) reduces after sunset. Late dinner raises insulin while sleeping, storing fat instead of burning it.'},{icon:'🌿',title:'Fennel Seed After Dinner',body:'1 tsp fennel seeds after dinner. Reduces bloating, aids digestion, freshens breath and provides small amounts of plant estrogens.'},{icon:'📵',title:'Phone-Free Bedroom',body:'Charge your phone outside the bedroom. Phone-free sleep improves sleep quality by 40%, reduces midnight scrolling and morning stress.'},{icon:'📖',title:'Read 20 Minutes',body:'Replace screen time with reading before bed. Reduces cortisol, shifts brain from alert to restful mode, and improves sleep onset by 50%.'},{icon:'🙏',title:'Body Scan Meditation',body:'Lie down, breathe slowly, and mentally scan from feet to head, releasing tension. 10 minutes reduces night sweats and improves deep sleep.'}] },
+  /* Day 14 */ { heading:'🔬 Hormone Lab Day', tips:[{icon:'🩺',title:'Essential Tests at 50+',body:'Ask your doctor for: TSH (thyroid), Vitamin D, B12, Iron/Ferritin, HbA1c, Lipids. These all directly affect weight and energy at 50+.'},{icon:'🦋',title:'Thyroid & Weight',body:'Underactive thyroid is common after 50 and causes stubborn weight gain, fatigue, hair loss. A simple blood test can diagnose and treat it.'},{icon:'💊',title:'Vitamin B12 Alert',body:'B12 deficiency causes fatigue, brain fog, nerve tingling — often mistaken for perimenopause symptoms. If you eat less meat, supplement daily.'},{icon:'🩸',title:'Insulin Resistance Check',body:'Fasting insulin test (not just blood sugar). High insulin causes belly fat even with normal blood glucose. Ask your doctor specifically for this.'},{icon:'📋',title:'Annual Gynaecology',body:'Annual PAP smear, mammogram and hormone panel. Perimenopause is the best time to establish your baseline numbers before menopause.'}] },
+  /* Day 15 */ { heading:'🎯 Mid-Month Reset Day', tips:[{icon:'🔄',title:'Re-evaluate Your Week',body:'What worked this week? What didn\'\2? Adjust one thing only. Changing everything at once leads to giving up. One tweak, one week.'},{icon:'💪',title:'Protein Goal Check',body:'Are you hitting 60–80g protein daily? Track for 3 days honestly. Most women discover they\'\2e getting only 30–40g and wonder why they\'\2e hungry.'},{icon:'💧',title:'Water Before Meals',body:'Drink 1 full glass 20 minutes before each meal. Reduces calorie intake by 100–150 kcal per meal without any willpower required.'},{icon:'🌸',title:'Progesterone Foods',body:'Zinc and B6 support progesterone: pumpkin seeds, chickpeas, banana, sunflower seeds. Low progesterone = anxiety, bloating, weight gain.'},{icon:'🤗',title:'Forgive Yourself',body:'One bad day or bad meal changes nothing. The damage from guilt and stress is worse than the food. Reset the next meal, not the next Monday.'}] },
+  /* Day 16 */ { heading:'🌊 Lymph & Detox Day', tips:[{icon:'🤸',title:'Rebounding Works',body:'5 minutes jumping on a mini-trampoline (or just bouncing on your heels) is the most effective lymph drainage exercise. No gym needed.'},{icon:'🍋',title:'Lemon Water Morning',body:'Juice of half a lemon in warm water first thing. Stimulates bile production, aids fat digestion and gently alkalises the body.'},{icon:'🧖',title:'Massage for Lymph',body:'Self-massage strokes always toward the heart. Focus on legs and abdomen. 10 minutes reduces water retention and supports detox pathways.'},{icon:'🥬',title:'Liver Support Foods',body:'Beetroot, carrots, leafy greens, garlic, walnuts. Your liver processes all hormones — support it and hormonal weight gain reduces naturally.'},{icon:'🫁',title:'Deep Belly Breathing',body:'Place hand on abdomen. Breathe so the hand rises. 10 belly breaths activate the lymph pump and parasympathetic nervous system simultaneously.'}] },
+  /* Day 17 */ { heading:'☀️ Vitality Boost Day', tips:[{icon:'🏃',title:'HIIT for 50+',body:'2×10-minute interval sessions weekly (walk fast 1 min, slow 2 min, repeat) burns more fat and is gentler on joints than long slow cardio.'},{icon:'🥗',title:'Eat Protein First',body:'At every meal, eat your protein first, then vegetables, then carbohydrates last. This sequence flattens the glucose curve dramatically.'},{icon:'🌿',title:'Adaptogenic Herbs',body:'Shatavari supports female hormones. Ashwagandha reduces cortisol. Brahmi sharpens focus. All safe, all effective — discuss with your doctor.'},{icon:'💃',title:'Joy as Exercise',body:'Any movement you enjoy counts. Gardening, dancing in the kitchen, playing with grandchildren. Joy-based movement is sustained; punishment-based is not.'},{icon:'🧠',title:'Mental Fitness',body:'Learn something new daily — a word, a recipe, an app feature. Cognitive engagement reduces stress hormones and keeps your brain sharp past 80.'}] },
+  /* Day 18 */ { heading:'🍽️ Mindful Eating Day', tips:[{icon:'🐌',title:'Eat Slower',body:'Put your fork down between bites. Chew 20 times. Your brain takes 20 minutes to register fullness — slowing down prevents 200–300 extra kcal daily.'},{icon:'🍽️',title:'Smaller Plate Science',body:'A 9-inch plate instead of 12-inch naturally reduces portions by 22% with no conscious restriction. Simple visual hack, real results.'},{icon:'📺',title:'No Screen Eating',body:'Eating while watching TV increases intake by 25–35%. You miss satiety signals completely. Even 1 screen-free meal daily makes a difference.'},{icon:'🌸',title:'Emotional Hunger Check',body:'Before eating outside meals, ask: am I physically hungry? Emotional hunger comes suddenly, craves specific foods, feels urgent. Pause 5 minutes first.'},{icon:'🙏',title:'Gratitude Before Eating',body:'A simple moment of appreciation before meals activates the parasympathetic state — improving digestion, nutrient absorption and satisfaction.'}] },
+  /* Day 19 */ { heading:'🦋 Thyroid & Metabolism Day', tips:[{icon:'🥜',title:'Selenium for Thyroid',body:'Brazil nuts (2 daily), sunflower seeds, eggs. Selenium is essential for thyroid hormone conversion — most Indian women are deficient.'},{icon:'🚫',title:'Limit Raw Goitrogens',body:'Raw cabbage, broccoli, cauliflower can inhibit thyroid if eaten in large quantities. Cooking deactivates this. Steamed or stir-fried is perfect.'},{icon:'🧂',title:'Iodised Salt Always',body:'Iodine is critical for thyroid. Use iodised salt. Seaweed is a rich source. Iodine deficiency is more common than you think at 50+.'},{icon:'⏰',title:'Consistent Meal Times',body:'Your thyroid regulates metabolism in sync with your circadian rhythm. Eating at wildly different times daily directly disrupts thyroid function.'},{icon:'🩺',title:'Thyroid Medication Timing',body:'If you take thyroid medication, take it 30–60 minutes before breakfast on an empty stomach, away from calcium supplements and coffee.'}] },
+  /* Day 20 */ { heading:'💧 Hydration Deep Dive Day', tips:[{icon:'🌡️',title:'Thirst vs Hunger',body:'Perimenopause reduces thirst sensitivity. Often what feels like hunger is dehydration. Drink 1 glass and wait 15 minutes before snacking.'},{icon:'🍉',title:'Eat Your Water',body:'Cucumber, watermelon, tomato, lettuce are 90–96% water. Include these at every meal for hydration that sustains longer than plain water.'},{icon:'☕',title:'Herbal Tea Counts',body:'Herbal teas count toward water intake. Ginger tea fights inflammation, peppermint reduces hot flashes, chamomile improves sleep. Triple benefit.'},{icon:'⏰',title:'Hydration Schedule',body:'Alarm at 9 AM, 12 PM, 3 PM, 6 PM for a glass of water. Don\'\2 rely on thirst — build a system. Consistency beats motivation always.'},{icon:'🚫',title:'Reduce Alcohol',body:'Even 1 drink triggers hot flashes, disrupts sleep architecture, increases cortisol the next morning and adds 150 empty kcal. Reduce gradually.'}] },
+  /* Day 21 */ { heading:'🌿 Plant Power Day', tips:[{icon:'🫛',title:'Legumes 5x a Week',body:'Dal, rajma, chhole, moong — every 200g serving gives 15g protein, 10g fibre, iron and folate. The most complete perimenopause food.'},{icon:'🌱',title:'Sprout Your Grains',body:'Sprouting moong, chana, methi increases nutrient bioavailability by 300–500%. Soak overnight, drain, leave for 24 hours — done.'},{icon:'🥬',title:'Dark Greens Daily',body:'Spinach, methi, moringa, amaranth leaves. Rich in iron, calcium, magnesium and folate — all depleted faster during perimenopause.'},{icon:'🫚',title:'Coconut in Cooking',body:'Small amounts of coconut (grated or oil) provide MCT fats that are metabolised directly for energy, not stored as fat. Anti-inflammatory.'},{icon:'🌾',title:'Ancient Grains',body:'Replace rice or wheat once daily with ragi, jowar, bajra, or amaranth. Higher protein, fibre and micronutrients than polished grains.'}] },
+  /* Day 22 */ { heading:'🧘 Stress Mastery Day', tips:[{icon:'📊',title:'Cortisol Curve',body:'Cortisol peaks at 8 AM, drops by noon, lowest at midnight. Time exercise, coffee and stressful tasks to the morning peak. Protect the evening.'},{icon:'🌿',title:'Adaptogens Work',body:'Ashwagandha (300mg), Rhodiola or Holy Basil (Tulsi) tea daily. Clinical studies show 20–30% cortisol reduction in 60 days.'},{icon:'🎨',title:'Creative Time',body:'30 minutes of any creative activity — drawing, cooking a new recipe, music — shifts the brain from stress mode. Not a luxury, a necessity.'},{icon:'🚶',title:'Nature Walk',body:'15 minutes walking in nature (park, garden, even trees on a road) reduces cortisol by 15%. Green spaces have measurable biological effects.'},{icon:'📴',title:'News Boundaries',body:'Limit news to once daily, 10 minutes maximum. Constant news exposure keeps your threat-response system activated — chronically raising cortisol.'}] },
+  /* Day 23 */ { heading:'🦷 Whole Body Health Day', tips:[{icon:'🦷',title:'Oral Health & Heart',body:'Gum disease bacteria enter bloodstream and increase heart disease risk. 50+ is when this link becomes critical. Floss daily, not occasionally.'},{icon:'👁️',title:'Eye Health at 50+',body:'Lutein and zeaxanthin in leafy greens protect against macular degeneration. Also: blink consciously during screen time, every 20 min look 20 feet away.'},{icon:'👂',title:'Protect Your Hearing',body:'Estrogen plays a role in hearing. At 50+, avoid prolonged loud noise. Hearing loss is linked to cognitive decline — protect it proactively.'},{icon:'🦵',title:'Varicose Vein Prevention',body:'Elevate legs 20 minutes daily. Compression socks on long days. Walk instead of stand still. These reduce vein pressure dramatically at 50+.'},{icon:'🧠',title:'Brain Health Habits',body:'Omega-3, social connection, learning, sleep, exercise — these 5 factors together reduce dementia risk by 40%. You\'\2e already doing most of them.'}] },
+  /* Day 24 */ { heading:'💰 Wellness Economics Day', tips:[{icon:'🏠',title:'Cook at Home More',body:'Restaurant and takeaway food has 60% more calories, 200% more sodium, and less fibre than home-cooked meals. One more home meal per week matters.'},{icon:'🛒',title:'Smart Grocery List',body:'Shop the perimeter of the supermarket — fresh produce, dairy, meat. The processed foods are in the middle aisles. Never shop hungry.'},{icon:'🥗',title:'Batch Cooking',body:'Cook dal, grains and vegetables in large batches Sunday. Having healthy food ready eliminates the 6 PM decision fatigue that leads to poor choices.'},{icon:'💊',title:'Supplement Priority Order',body:'If budget is limited, prioritise: Vitamin D3 (most impactful), Magnesium Glycinate, Omega-3. These three address the most common 50+ deficiencies.'},{icon:'🏃',title:'Free Exercise',body:'Walking, stair climbing, bodyweight exercises, dancing at home — the best perimenopause exercise routine costs exactly nothing.'}] },
+  /* Day 25 */ { heading:'🌺 Skin & Hair Day', tips:[{icon:'💧',title:'Skin and Estrogen',body:'Estrogen loss reduces collagen by 30% in the first 5 years. Vitamin C (amla, citrus) is essential for collagen synthesis — eat it daily.'},{icon:'🥚',title:'Biotin for Hair',body:'Eggs, almonds, sweet potato contain biotin. Perimenopause hair thinning is partly biotin and iron deficiency — address through food first.'},{icon:'☀️',title:'SPF Every Day',body:'UV damage accelerates collagen loss that estrogen was protecting. SPF 30+ every morning, indoors too if near windows. Non-negotiable.'},{icon:'🫙',title:'Collagen Foods',body:'Bone broth, fish (with skin), egg whites provide collagen precursors. Vitamin C at the same meal doubles absorption and synthesis.'},{icon:'🌿',title:'Amla for Everything',body:'1 amla daily or amla powder: highest Vitamin C of any food, supports collagen, hair growth, immunity, and liver function simultaneously.'}] },
+  /* Day 26 */ { heading:'🤸 Flexibility & Posture Day', tips:[{icon:'🧘',title:'Posture is Metabolism',body:'Slouching compresses organs, reduces lung capacity, and signals the nervous system to stress mode. Sit tall — it\'\2 a metabolic intervention.'},{icon:'🤸',title:'Hip Mobility Daily',body:'10 hip circles each direction, morning and evening. Tight hips are linked to lower back pain, poor sleep posture and reduced exercise capacity.'},{icon:'🦶',title:'Foot Health Matters',body:'Fallen arches (common at 50+) misalign knees, hips and spine. Supportive footwear and calf raises daily prevent a cascade of pain problems.'},{icon:'🙆',title:'Shoulder Rolls',body:'Roll shoulders backward 10 times every hour at a desk. Counteracts forward posture that causes neck tension, headaches and shallow breathing.'},{icon:'🌿',title:'Anti-Inflammatory Stretch',body:'Yoga Nidra (yogic sleep) for 20 minutes reduces inflammatory cytokines measurably. It\'\2 a lying-down guided meditation — the most gentle exercise.'}] },
+  /* Day 27 */ { heading:'🎉 Celebrate Progress Day', tips:[{icon:'🌟',title:'You\'\2e Doing It',body:'Every day you track, every healthy meal, every walk — you are literally rewiring your brain and body. This is harder than it looks and you\'\2e doing it.'},{icon:'📸',title:'Progress Not Perfection',body:'If you have done 60% of what you intended this month, that is extraordinary success. 60% consistency for a year creates transformation.'},{icon:'🤝',title:'Find Your Person',body:'One friend or family member who supports your goals multiplies success by 3× in studies. Share this app with someone who needs it.'},{icon:'🌸',title:'Perimenopause is Temporary',body:'The most intense symptoms last 2–5 years. With the right nutrition, movement and sleep, many women report feeling better at 55 than at 45.'},{icon:'💫',title:'Your Future Self',body:'The woman you\'\2e becoming — stronger, more knowledgeable, more intentional about her health — she is grateful you started today. Keep going.'}] },
+  /* Day 28 */ { heading:'🔄 New Cycle Reset Day', tips:[{icon:'📊',title:'Monthly Review',body:'Check your weight trend (not today\'\2 number — the monthly average). Check your waist. Check your energy. Three data points tell the real story.'},{icon:'🎯',title:'Set Next Month\'\2 Focus',body:'Choose one new habit to add and one to reduce next month. Only one each. Stacking small changes consistently creates the biggest transformations.'},{icon:'🌿',title:'Seasonal Eating',body:'Eat what\'\2 in season locally. Seasonal produce is 50% more nutritious, cheaper, and naturally aligned with your body\'\2 changing needs.'},{icon:'💌',title:'Write to Yourself',body:'Write a short letter to yourself about this month — what you learned, what surprised you, what you\'\2e proud of. Read it in 3 months.'},{icon:'🌅',title:'Begin Again',body:'Tomorrow the meal and tips cycle resets with fresh ideas. Every day is a new opportunity. There is no wagon to fall off — only today to begin.'}] }
+];
+
+function loadDailyTips(){
+  const now   = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const idx   = dayOfYear % DAILY_TIPS.length;
+  const set   = DAILY_TIPS[idx];
+  const dateStr = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
+
+  document.getElementById('tips-heading').textContent = set.heading + ' · ' + dateStr;
+  const grid = document.getElementById('tips-grid');
+  grid.innerHTML = set.tips.map(t =>
+    '<div class="tip-item"><strong>' + t.icon + ' ' + t.title + '</strong>' + t.body + '</div>'
+  ).join('');
+}
+
+/* ══ INIT ══ */
+/* ══ SHARECARD (owner-only marketing tool) ══ */
+function copyCaption(){
+  const caption =
+    "Feel powerful after 50. ✨\n" +
+    "50 के बाद खुद को मजबूत महसूस करें।\n\n" +
+    "MenoPower Pro — $39 / ₹999, lifetime access.\n" +
+    "#menopause #womenwellness #perimenopause #women50plus #wellnessjourney #healthyaging";
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(caption).catch(()=>{});
+  }
+  return caption;
+}
+
+async function launchPost(){
+  const caption = copyCaption();
+  const node = document.getElementById('capture-area');
+  const original = { left: node.style.left, top: node.style.top };
+  node.style.left = '0px'; node.style.top = '0px'; node.style.zIndex = '-1';
+
+  try{
+    const canvas = await html2canvas(node, { width: 1000, height: 1500, scale: 1 });
+    node.style.left = original.left; node.style.top = original.top;
+
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'menopower-share.jpg', { type: 'image/jpeg' });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){
+        try{
+          await navigator.share({ files: [file], title: 'MenoPower Pro', text: caption });
+        }catch(e){ /* user cancelled share, no-op */ }
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'menopower-share.jpg';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Caption copied. Image downloaded.');
+      }
+    }, 'image/jpeg', 0.95);
+  }catch(e){
+    node.style.left = original.left; node.style.top = original.top;
+    showToast('Could not generate share card.');
+  }
+}
+
+window.onload = function(){
+  // Show screen1 by default
+  document.getElementById('screen1').style.display = 'flex';
+  document.getElementById('screen2').style.display = 'none';
+  document.getElementById('screen3').style.display = 'none';
+  // Default to global pass
+  switchPass('global');
+  // If already activated, go straight to screen3
+  if(localStorage.getItem('meno_activated') === 'yes' && getLicensePIN()){
+    show('screen3');
+    loadApp();
+  }
+};
+</script>
+</body>
+</html>
